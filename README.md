@@ -1,6 +1,6 @@
 # Enzyme Variant Effect Prediction with ESM2
 
-Zero-shot mutation effect prediction for industrial enzymes using the ESM2 protein language model, with a hands-on extension into structure prediction (Boltz-2). Built to demonstrate applied protein-AI methodology (protein language models, structure/stability prediction) for enzyme engineering — the kind of work described in industrial biotech AI roles such as CJ Cheiljedang's BIO AI (enzyme design) position.
+Zero-shot mutation effect prediction for industrial enzymes using the ESM2 protein language model, with a hands-on extension into structure prediction (Boltz-2). Built to demonstrate applied protein-AI methodology (protein language models, structure/stability prediction) for enzyme engineering.
 
 ## Motivation
 
