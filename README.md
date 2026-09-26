@@ -4,7 +4,7 @@ Zero-shot mutation effect prediction for industrial enzymes using the ESM2 prote
 
 ## Motivation
 
-Most of my prior ML/bioinformatics work (M.S. thesis on transfer-learning-based drug response prediction, published transcriptomic meta-analysis, whole-slide-image classification) is transcriptomics- and pathology-image-focused. This project was built specifically to gain hands-on experience with **protein sequence/structure foundation models** (ESM2, and Boltz-2 for structure), which is a distinct and increasingly important subfield within computational biology — directly relevant to AI-driven enzyme/protein engineering roles.
+Most of my prior ML/bioinformatics work (M.S. thesis on transfer-learning-based drug response prediction, published transcriptomic meta-analysis) is transcriptomics-focused. This project was built specifically to gain hands-on experience with **protein sequence/structure foundation models** (ESM2, and Boltz-2 for structure), which is a distinct and increasingly important subfield within computational biology — directly relevant to AI-driven enzyme/protein engineering roles.
 
 ## Method
 
@@ -57,7 +57,9 @@ Extending the pipeline to compare predicted 3D structure/confidence of wild-type
 
 - `esm2_enzyme_variant_effect_miniproject.ipynb` — Phase 1 + Phase 2 (main pipeline)
 - `boltz2_structure_extension.ipynb` — Phase 3 (structure prediction extension, in progress)
-- `BLAT_ECOLX_reference_with_esm1v_scores.csv` — reference DMS dataset + published ESM1v scores (validation)
+- `BLAT_ECOLX_reference_with_esm1v_scores.csv` — reference DMS dataset + published ESM1v scores (validation). Redistributed from [facebookresearch/esm](https://github.com/facebookresearch/esm) (MIT licence); the underlying deep mutational scan is from Firnberg/Stiffler et al., TEM-1 β-lactamase (2014–2015).
+- `scripts/proteingym_benchmark.py` — run any ProteinGym substitution assay end-to-end (`--dms-id <id>`), with automatic comparison against the published ProteinGym leaderboard
+- `tests/test_offline.py` — validation that needs no GPU and no model download, including a numerical check that position-cached batched scoring is identical to naive per-mutation scoring
 - `phase2_*_saturation_mutagenesis.csv` — per-enzyme saturation mutagenesis results
 - `phase1_blat_ecolx_correlation.png`, `phase2_heatmaps.png` — result figures
 

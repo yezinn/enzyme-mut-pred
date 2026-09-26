@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Downloaded DMS data (fetched by scripts/proteingym_benchmark.py)
+data/
+
+# Boltz-2 run artifacts
+boltz_runs/
+boltz_runs_affinity/
+boltz_smoke_test/
+
+# OS
+.DS_Store

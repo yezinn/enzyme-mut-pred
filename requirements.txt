@@ -1,0 +1,15 @@
+# Core
+torch>=2.0
+transformers>=4.30
+huggingface_hub>=0.20
+
+# Data / analysis
+pandas>=1.5
+scipy>=1.10
+
+# Plotting
+matplotlib>=3.6
+seaborn>=0.12
+
+# Notebook progress bars
+tqdm>=4.65
