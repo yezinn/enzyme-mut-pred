@@ -155,6 +155,72 @@ def download_dms_data(meta: AssayMetadata, cache_dir: str = "data") -> pd.DataFr
 
 
 # --------------------------------------------------------------------------
+# Schema normalization
+# --------------------------------------------------------------------------
+SEQUENCE_COLUMNS = ("mutated_sequence", "sequences", "sequence")
+SCORE_COLUMNS = ("DMS_score", "labels", "label", "score")
+
+
+def normalize_dms_frame(df: pd.DataFrame, target_seq: str) -> pd.DataFrame:
+    """
+    Bring a DMS table to the official ProteinGym schema (`mutant`, `DMS_score`).
+
+    Official ProteinGym files already use these column names. Community mirrors
+    may instead ship the full mutated sequence plus a label column, in which case
+    the mutation code is reconstructed by diffing each sequence against
+    `target_seq`. Rows that are not single substitutions are reported and dropped.
+    """
+    df = df.copy()
+
+    if "DMS_score" not in df.columns:
+        score_col = next((c for c in SCORE_COLUMNS if c in df.columns), None)
+        if score_col is None:
+            raise ValueError(
+                f"no score column found (looked for {SCORE_COLUMNS}); "
+                f"columns are {list(df.columns)}"
+            )
+        df = df.rename(columns={score_col: "DMS_score"})
+        print(f"[schema] using column '{score_col}' as DMS_score")
+
+    if "mutant" in df.columns:
+        return df
+
+    seq_col = next((c for c in SEQUENCE_COLUMNS if c in df.columns), None)
+    if seq_col is None:
+        raise ValueError(
+            f"no 'mutant' column and no sequence column (looked for {SEQUENCE_COLUMNS}); "
+            f"columns are {list(df.columns)}"
+        )
+    print(f"[schema] no 'mutant' column; reconstructing it by diffing '{seq_col}' "
+          "against the reference target_seq")
+
+    def to_mutant_code(seq: object) -> Optional[str]:
+        seq = str(seq)
+        if len(seq) != len(target_seq):
+            return None
+        diffs = [i for i, (a, b) in enumerate(zip(target_seq, seq)) if a != b]
+        if len(diffs) != 1:
+            return None
+        i = diffs[0]
+        return f"{target_seq[i]}{i + 1}{seq[i]}"
+
+    df["mutant"] = df[seq_col].map(to_mutant_code)
+    n_bad = int(df["mutant"].isna().sum())
+    if n_bad:
+        print(f"[schema] dropped {n_bad} rows that were not single substitutions "
+              "of the reference sequence (length mismatch or multiple changes)")
+        df = df.dropna(subset=["mutant"])
+    if df.empty:
+        raise ValueError(
+            "no rows could be matched to the reference sequence. The mirror's "
+            "sequences may correspond to a different construct than ProteinGym's "
+            "target_seq — download the official file instead (see --data-dir)."
+        )
+    print(f"[schema] reconstructed {len(df)} single-substitution mutation codes")
+    return df
+
+
+# --------------------------------------------------------------------------
 # Validation
 # --------------------------------------------------------------------------
 def validate_mutants(df: pd.DataFrame, target_seq: str, mutant_col: str = "mutant") -> pd.DataFrame:
@@ -314,6 +380,7 @@ def main() -> None:
 
     df = download_dms_data(meta, args.data_dir)
     print(f"[data] {len(df)} rows, columns: {list(df.columns)}")
+    df = normalize_dms_frame(df, meta.target_seq)
     df = validate_mutants(df, meta.target_seq)
     check_score_direction(df, meta)
 
@@ -326,6 +393,10 @@ def main() -> None:
 
     print("\n--- result ---")
     print(f"  Spearman rho = {rho:.3f}  (p = {pval:.2e}, n = {len(scored)})")
+    if rho < 0:
+        print("  [warn] negative correlation. ESM2 is expected to correlate positively "
+              "with fitness, so this usually means the score column of this data source "
+              "is inverted relative to ProteinGym's convention rather than a model failure.")
     if baseline is not None:
         print(f"  ProteinGym published ESM2 (650M) baseline = {baseline:.3f}")
         print(f"  difference = {rho - baseline:+.3f}")
