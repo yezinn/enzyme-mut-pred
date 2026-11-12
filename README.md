@@ -22,7 +22,9 @@ Validated the pipeline against a real deep mutational scanning (DMS) dataset: TE
 
 **Result: Spearman ρ = 0.730** between ESM2 zero-shot scores and experimental fitness (ampicillin selection at 2500 μg/mL), matching the ESM1v 5-model ensemble performance reported in the original paper (ρ ≈ 0.7).
 
-![Phase 1 correlation](phase1_blat_ecolx_correlation.png)
+<p align="center">
+  <img src="phase1_blat_ecolx_correlation.png" width="480" alt="Phase 1 correlation">
+</p>
 
 ## Phase 2 — Application to industrial enzymes
 
