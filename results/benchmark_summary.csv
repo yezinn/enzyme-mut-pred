@@ -1,0 +1,2 @@
+dms_id,uniprot_id,organism,seq_len,n_mutants,model,spearman_rho,p_value,proteingym_esm2_650M_baseline
+AMIE_PSEAE_Wrenbeck_2017,AMIE_PSEAE,Pseudomonas aeruginosa,346,6227,facebook/esm2_t33_650M_UR50D,0.5569,0.0,0.557
